@@ -65,7 +65,7 @@ jobs:
 #     Build Docker image:
       - name: Build and tag image
         run: |
-          docker build -t "${{ steps.global_env.outputs.DOCKERHUB_IMAGE_NAME }}:latest" -t "${{ steps.global_env.outputs.DOCKERHUB_IMAGE_NAME }}:${GITHUB_SHA::8}" -f production.dockerfile .
+          docker build -t "${{ steps.global_env.outputs.DOCKERHUB_IMAGE_NAME }}:latest" -t "${{ steps.global_env.outputs.DOCKERHUB_IMAGE_NAME }}:${GITHUB_SHA::8}" -f dev.dockerfile .
 
       - name: Docker login
         run: docker login ghcr.io -u $GITHUB_ACTOR -p ${{secrets.PAT}}
