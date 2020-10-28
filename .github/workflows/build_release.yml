@@ -86,4 +86,4 @@ jobs:
           host: ${{ secrets.DOCKER_HOST }}
           privateKey: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
           username: ${{ secrets.DOCKER_USER }}
-          command: cd ~/vas3k.club && docker-compose pull -f docker-compose.uat.yml && docker-compose down -f docker-compose.uat.yml && docker-compose up -d -f docker-compose.uat.yml
+          command: cd ~/vas3k.club && docker-compose -f docker-compose.uat.yml pull && docker-compose -f docker-compose.uat.yml down && docker-compose -f docker-compose.uat.yml up -d
