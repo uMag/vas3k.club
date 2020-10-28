@@ -1,69 +1,6 @@
 version: "3.7"
 
 services:
-  club_app: &app
-    image: ghcr.io/umag/vas3k.club:latest
-    command: make docker-run-production
-    container_name: club_app
-    environment:
-      - PYTHONUNBUFFERED=1
-      - DEBUG=false
-      - APP_HOST=https://vas3k.club
-      - MEDIA_UPLOAD_URL=https://i.vas3k.club/upload/
-      - POSTGRES_DB=vas3k_club
-      - POSTGRES_USER=vas3k
-      - POSTGRES_PASSWORD=vas3k
-      - POSTGRES_HOST=postgres
-      - REDIS_DB=0
-      - REDIS_HOST=redis
-      - PUID=1000
-      - PGID=1000
-    restart: always
-    volumes:
-      - ./frontend/static:/app/frontend/static
-      - ./gdpr/downloads:/app/gdpr/downloads
-    depends_on:
-      - postgres
-      - redis
-      - queue
-    ports:
-      - "8814:8814"
-
-  queue:
-    <<: *app
-    environment:
-      - PUID=1000
-      - PGID=1000
-    command: make docker-run-queue
-    container_name: club_queue
-    depends_on:
-      - postgres
-      - redis
-    ports: []
-
-  postgres:
-    image: postgres:12
-    container_name: club_postgres
-    restart: always
-    environment:
-      POSTGRES_USER: vas3k
-      POSTGRES_PASSWORD: vas3k
-      POSTGRES_DB: vas3k_club
-      PUID: 1000
-      PGID: 1000
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data:rw
-    ports:
-      - "54333:5432"
-
-  redis:
-    image: redis:alpine
-    container_name: club_redis
-    restart: always
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-      - PUID=1000
-      - PGID=1000
   nginx:
     image: nginx:latest
     container_name: nginx
@@ -73,3 +10,60 @@ services:
       - ./gdpr:/gdpr
     ports:
       - 80:80
+
+  club_app: &app
+    image: ghcr.io/umag/vas3k.club:latest
+    command: make docker-run-dev
+    container_name: club_app
+    environment:
+      - DEBUG=true
+      - PYTHONUNBUFFERED=1
+      - POSTGRES_DB=vas3k_club
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=postgres
+      - REDIS_DB=0
+      - REDIS_HOST=redis
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+      - queue
+      - webpack
+      - nginx
+    ports:
+      - "8000:8000"
+
+  queue:
+    image: ghcr.io/umag/vas3k.club:latest
+    command: make docker-run-queue
+    environment:
+      - DEBUG=true
+      - PYTHONUNBUFFERED=1
+      - POSTGRES_DB=vas3k_club
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=postgres
+      - REDIS_DB=0
+      - REDIS_HOST=redis
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:12
+    container_name: club_postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=vas3k_club
+    ports:
+      - 5432:5432
+
+  redis:
+    image: redis:alpine
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 6379:6379
