@@ -80,6 +80,13 @@ jobs:
           privateKey: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
           username: ${{ secrets.DOCKER_USER }}
           command: cd ~/vas3k.club && wget -c https://raw.githubusercontent.com/uMag/vas3k.club/uat/docker-compose.uat.yml -c
+      - name: Deploy frontend
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          host: ${{ secrets.DOCKER_HOST }}
+          privateKey: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
+          username: ${{ secrets.DOCKER_USER }}
+          command: cd ~/vas3k.club && wget -c https://gitreleases.dev/gh/uMag/vas3k.club/latest/frontend.zip && unzip frontend.zip -o -d ./frontend
       - name: Deploy to Docker-compose
         uses: garygrossgarten/github-action-ssh@release
         with:
