@@ -66,14 +66,9 @@ jobs:
     runs-on: ubuntu-latest
     - name: Prepare
       run: |
-#       переменную IMAGE_NAME формируем из названия репозитория
-#                       "owner/repo-name"
-#       берем все что после   /  чтобы задать имя образа
-#       set-output выставляет переменную в этом шаге
-        run: |
-          REPOSITORY=$(echo $GITHUB_REPOSITORY | tr '[A-Z]' '[a-z]')
-          echo "::set-output name=IMAGE_NAME::${REPOSITORY#*/}"
-          echo "::set-output name=DOCKERHUB_IMAGE_NAME::ghcr.io/${REPOSITORY}"
+        REPOSITORY=$(echo $GITHUB_REPOSITORY | tr '[A-Z]' '[a-z]')
+        echo "::set-output name=IMAGE_NAME::${REPOSITORY#*/}"
+        echo "::set-output name=DOCKERHUB_IMAGE_NAME::ghcr.io/${REPOSITORY}"
 
 #     Build Docker image:
       - name: Build and tag image
