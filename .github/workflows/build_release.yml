@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - master
+      - uat
 
 name: Build and Publish frontend and backend
 
@@ -92,7 +92,7 @@ jobs:
           host: ${{ secrets.DOCKER_HOST }}
           privateKey: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
           username: ${{ secrets.DOCKER_USER }}
-          command: cd ~/club && wget -c https://raw.githubusercontent.com/uMag/vas3k.club/master/docker-compose.uat.yml -c
+          command: cd ~/club && wget -c https://raw.githubusercontent.com/uMag/vas3k.club/uat/docker-compose.uat.yml -c
       - name: Deploy to Docker-compose
         uses: garygrossgarten/github-action-ssh@release
         with:
