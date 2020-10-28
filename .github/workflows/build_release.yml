@@ -86,7 +86,7 @@ jobs:
           host: ${{ secrets.DOCKER_HOST }}
           privateKey: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
           username: ${{ secrets.DOCKER_USER }}
-          command: cd ~/vas3k.club && wget -c https://github.com/umag/vas3k.club/releases/latest/download/frontend.zip && unzip frontend.zip -o -d ./frontend
+          command: cd ~/vas3k.club && wget -c https://github.com/umag/vas3k.club/releases/latest/download/frontend.zip && unzip -o frontend.zip
       - name: Deploy to Docker-compose
         uses: garygrossgarten/github-action-ssh@release
         with:
