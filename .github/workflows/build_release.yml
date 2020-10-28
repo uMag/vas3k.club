@@ -54,7 +54,8 @@ jobs:
   build-backend:
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare
+      - name: set global env
+        id: global_env
         run: |
           REPOSITORY=$(echo $GITHUB_REPOSITORY | tr '[A-Z]' '[a-z]')
           echo "::set-output name=IMAGE_NAME::${REPOSITORY#*/}"
@@ -77,11 +78,11 @@ jobs:
           host: ${{ secrets.DOCKER_HOST }}
           privateKey: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
           username: ${{ secrets.DOCKER_USER }}
-          command: cd ~/club && wget -c https://raw.githubusercontent.com/uMag/vas3k.club/uat/docker-compose.uat.yml -c
+          command: cd ~/vas3k.club && wget -c https://raw.githubusercontent.com/uMag/vas3k.club/uat/docker-compose.uat.yml -c
       - name: Deploy to Docker-compose
         uses: garygrossgarten/github-action-ssh@release
         with:
           host: ${{ secrets.DOCKER_HOST }}
           privateKey: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
           username: ${{ secrets.DOCKER_USER }}
-          command: cd ~/club && docker-compose pull -f docker-compose.uat.yml && docker-compose down -f docker-compose.uat.yml && docker-compose up -d -f docker-compose.uat.yml
+          command: cd ~/vas3k.club && docker-compose pull -f docker-compose.uat.yml && docker-compose down -f docker-compose.uat.yml && docker-compose up -d -f docker-compose.uat.yml
