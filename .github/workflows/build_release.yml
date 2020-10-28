@@ -54,6 +54,7 @@ jobs:
   build-backend:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: set global env
         id: global_env
         run: |
