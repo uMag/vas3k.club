@@ -9,14 +9,14 @@ jobs:
   bump-and-tag:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-      with:
-        fetch-depth: '0'
-    - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@1.17.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        WITH_V: false
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.17.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: false
 
   build-frontend:
     runs-on: ubuntu-latest
@@ -25,50 +25,52 @@ jobs:
         node-version: [14.x]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm ci
-      working-directory: frontend
-    - run: npm run build --if-present
-      working-directory: frontend
-    - run: npm test
-      working-directory: frontend
-      env:
-        CI: true
-    - uses: montudor/action-zip@v0.1.0
-      with:
-        args: zip -qq -r ./zip/frontend.zip ./frontend
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.run_id }}
-        release_name: Release ${{ github.run_id }}
-        draft: false
-        prerelease: false
-    - name: Upload Release Asset
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: ./zip/frontend.zip
-        asset_name: frontend.zip
-        asset_content_type: application/zip
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run build --if-present
+        working-directory: frontend
+      - run: npm test
+        working-directory: frontend
+        env:
+          CI: true
+      - uses: montudor/action-zip@v0.1.0
+        with:
+          args: zip -qq -r ./zip/frontend.zip ./frontend
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.run_id }}
+          release_name: Release ${{ github.run_id }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./zip/frontend.zip
+          asset_name: frontend.zip
+          asset_content_type: application/zip
 
   build-backend:
     runs-on: ubuntu-latest
-    - name: Prepare
-      run: |
-        REPOSITORY=$(echo $GITHUB_REPOSITORY | tr '[A-Z]' '[a-z]')
-        echo "::set-output name=IMAGE_NAME::${REPOSITORY#*/}"
-        echo "::set-output name=DOCKERHUB_IMAGE_NAME::ghcr.io/${REPOSITORY}"
+    steps:
+      - name: Prepare
+        run: |
+          REPOSITORY=$(echo $GITHUB_REPOSITORY | tr '[A-Z]' '[a-z]')
+          echo "::set-output name=IMAGE_NAME::${REPOSITORY#*/}"
+          echo "::set-output name=DOCKERHUB_IMAGE_NAME::ghcr.io/${REPOSITORY}"
 
 #     Build Docker image:
       - name: Build and tag image
@@ -95,4 +97,3 @@ jobs:
           privateKey: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
           username: ${{ secrets.DOCKER_USER }}
           command: cd ~/club && docker-compose pull -f docker-compose.uat.yml && docker-compose down -f docker-compose.uat.yml && docker-compose up -d -f docker-compose.uat.yml
-          
