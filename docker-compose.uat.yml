@@ -10,6 +10,8 @@ services:
       - ./gdpr:/gdpr
     ports:
       - 80:80
+    depends_on:
+      - club_app
 
   club_app: &app
     image: ghcr.io/umag/vas3k.club:latest
@@ -29,10 +31,11 @@ services:
       - postgres
       - redis
       - queue
-      - webpack
-      - nginx
     ports:
       - "8000:8000"
+    volumes:
+      - ./frontend/static:/app/frontend/static
+      - ./gdpr/downloads:/app/gdpr/downloads
 
   queue:
     image: ghcr.io/umag/vas3k.club:latest
@@ -58,8 +61,12 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=vas3k_club
+      - PUID = 1000
+      - PGID = 1000
     ports:
       - 5432:5432
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data:rw
 
   redis:
     image: redis:alpine
