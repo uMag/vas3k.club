@@ -12,6 +12,9 @@ services:
       - 80:80
     depends_on:
       - club_app
+    environment:
+      - PUID=1000
+      - PGID=1000
 
   club_app: &app
     image: ghcr.io/umag/vas3k.club:latest
@@ -26,6 +29,8 @@ services:
       - POSTGRES_HOST=postgres
       - REDIS_DB=0
       - REDIS_HOST=redis
+      - PUID=1000
+      - PGID=1000
     restart: always
     depends_on:
       - postgres
@@ -49,6 +54,8 @@ services:
       - POSTGRES_HOST=postgres
       - REDIS_DB=0
       - REDIS_HOST=redis
+      - PUID=1000
+      - PGID=1000
     restart: always
     depends_on:
       - postgres
@@ -61,8 +68,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=vas3k_club
-      - PUID = 1000
-      - PGID = 1000
+      - PUID=1000
+      - PGID=1000
     ports:
       - 5432:5432
     volumes:
@@ -72,5 +79,7 @@ services:
     image: redis:alpine
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
+      - PUID=1000
+      - PGID=1000
     ports:
       - 6379:6379
